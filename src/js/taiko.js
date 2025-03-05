@@ -2,6 +2,7 @@
  * Created by yuanyaoqi on 16/7/27.
  */
 var username;
+var walletAddress = null; // Add this variable to store wallet address
 var taikoList=[];//鼓点数组
 //1.红鼓点小 2.蓝鼓点小 3.红鼓点大 4.蓝鼓点大
 var taikoValueList=[
@@ -40,6 +41,12 @@ function gameStart() {
         document.getElementById("startBox").getElementsByTagName("h4")[0].innerHTML = "Please enter your name";
     }
     else if (username !== "") {
+        // Check if wallet is connected and save the address
+        if (window.provider && window.provider._accounts && window.provider._accounts.length > 0) {
+            walletAddress = window.provider._accounts[0];
+            console.log("Playing with wallet:", walletAddress);
+        }
+
         document.getElementById("startBox").style.display = "none";
         // 跳过规则界面，直接显示游戏界面并开始游戏
         document.getElementById("taikoBox").style.display = "block";
@@ -218,21 +225,21 @@ function creatTaiko(ctx,imgnode) {
 function taikoPrototype(ctx,imgnode,value,drawY,text) {
     switch (value){
         case 1: this.color="Red";
-                this.size="Small";
-                this.drawW=50;
-                break;
+            this.size="Small";
+            this.drawW=50;
+            break;
         case 2: this.color="Blue";
-                this.size="Small";
-                this.drawW=50;
-                break;
+            this.size="Small";
+            this.drawW=50;
+            break;
         case 3: this.color="Red";
-                this.size="Big";
-                this.drawW=70;
-                break;
+            this.size="Big";
+            this.drawW=70;
+            break;
         case 4: this.color="Blue";
-                this.size="Big";
-                this.drawW=70;
-                break;
+            this.size="Big";
+            this.drawW=70;
+            break;
     }
     this.ctx=ctx;
     this.imgNode=imgnode;
@@ -363,7 +370,7 @@ function dancerGirltype(ctx,imgnode) {
         this.ctx.stroke();
         //time为舞蹈人物的动作数,每四拍改变一次动作
         this.time++;
-        if(this.time==4){  
+        if(this.time==4){
             this.cutY=193;
         }
         else if(this.time==8){
@@ -390,17 +397,49 @@ function gameEnd() {
     document.getElementById("bg_travel").pause();
     document.getElementById("endmusic").play();
     queryScore();
+
+    // Auto logout after game ends
+    setTimeout(function() {
+        logoutWallet();
+    }, 5000); // Wait 5 seconds before logging out
 }
+
+// New function to handle wallet logout
+function logoutWallet() {
+    if (window.provider) {
+        // Disconnect the wallet
+        try {
+            window.provider.disconnect();
+            console.log("Wallet disconnected");
+        } catch (e) {
+            console.error("Error disconnecting wallet:", e);
+        }
+    }
+
+    // Reset wallet address
+    walletAddress = null;
+
+    // Reset the UI to show wallet connection screen on next play
+    document.getElementById('endBox').querySelector('div').addEventListener('click', function() {
+        setTimeout(function() {
+            document.getElementById('walletBox').style.display = 'block';
+            document.getElementById('startBox').style.display = 'none';
+        }, 500);
+    }, { once: true });
+}
+
 //保存用户分数
 function saveScore(){
     var db = openDatabase("demo100","","",1024*1024*10);
     db.transaction(function(tx){
-        tx.executeSql("create table if not exists scoreRank(username varchar(50), score varchar(50))");
+        // Update schema to include wallet_address
+        tx.executeSql("create table if not exists scoreRank(username varchar(50), score varchar(50), wallet_address varchar(50))");
     },function(trans,err){
         console.log(err);
     });
     db.transaction(function(tx){
-        tx.executeSql("insert into scoreRank values(?,?)",[username,scoreNumber]);
+        // Insert with wallet address if connected
+        tx.executeSql("insert into scoreRank values(?,?,?)",[username, scoreNumber, walletAddress]);
     },function(trans,err){
         console.log(trans);
         console.log(err)

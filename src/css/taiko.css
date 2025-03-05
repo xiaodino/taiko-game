@@ -1,12 +1,12 @@
 @font-face {
     font-family: 'SimplePixels';
-    src: url('../../taiko-sbh/fonts/Simple-Pixels-Latin-Cyrillic-Katakana-1.ttf') format('truetype');
+    src: url('../../assets/fonts/Simple-Pixels-Latin-Cyrillic-Katakana-1.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 body{
-    background-image: url(../../taiko-sbh/img/bodybg.png);
+    background-image: url(../../assets/img/bodybg.png);
     background-position: 0 0;
     background-repeat: repeat;
     background-size: auto;
@@ -24,7 +24,7 @@ body{
     transform: translateX(-50%);
     border: 20px solid white !important;
     display:block;
-    background-image: url(../../taiko-sbh/img/startbg.jpg);
+    background-image: url(../../assets/img/startbg.jpg);
     background-size: cover;
     background-position: 0px 0px;
     background-color: white;
@@ -36,7 +36,7 @@ body{
     width: 650px;
     position: absolute;
     left: 50%;
-    transform: translateX(-50%); 
+    transform: translateX(-50%);
     top: 90px;
 }
 #startBox>div{
@@ -165,7 +165,7 @@ body{
 /*头部*/
 #head{
     height: 120px;
-    background-image: url(../../taiko-sbh/img/headbg1.png);
+    background-image: url(../../assets/img/headbg1.png);
     background-size: 100% auto;
     background-position: center;
     background-repeat: no-repeat;
@@ -264,7 +264,7 @@ body{
 /*底部*/
 #foot{
     height: 260px;
-    background-image: url(../../taiko-sbh/img/footbg.jpg);
+    background-image: url(../../assets/img/footbg.jpg);
     background-size: cover;
     background-position: center center;
     border-bottom-left-radius: 10px;
@@ -286,7 +286,7 @@ body{
     z-index: 12;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     cursor: pointer;
-    background-image: url(../../taiko-sbh/img/pause.png);
+    background-image: url(../../assets/img/pause.png);
     background-size: 20px 20px;
     background-position: center;
     background-repeat: no-repeat;
@@ -348,7 +348,7 @@ body{
     transform: translateX(-50%);
     border: 20px solid #e0e0e0;
     display:none;
-    background-image: url(../../taiko-sbh/img/endbg.png);
+    background-image: url(../../assets/img/endbg.png);
     text-align: center;
     background-color: white;
     border-radius: 30px !important;
@@ -358,14 +358,14 @@ body{
 #firstIcon{
     width: 30px;
     height: 22px;
-    background-image: url(../../taiko-sbh/img/clearmark.png);
+    background-image: url(../../assets/img/clearmark.png);
     background-position: -107px;
     display: inline-block;
 }
 #secondIcon{
     width: 28px;
     height: 22px;
-    background-image: url(../../taiko-sbh/img/clearmark.png);
+    background-image: url(../../assets/img/clearmark.png);
     background-position: -80px;
     display: inline-block;
 
@@ -373,7 +373,7 @@ body{
 #thirdIcon{
     width: 30px;
     height: 22px;
-    background-image: url(../../taiko-sbh/img/clearmark.png);
+    background-image: url(../../assets/img/clearmark.png);
     background-position: -51px;
     display: inline-block;
 
@@ -416,8 +416,8 @@ body{
 }
 
 /* 应用字体到所有需要的元素 */
-#startBox>div>div, 
-#username, 
+#startBox>div>div,
+#username,
 #startBox h4,
 #username::placeholder,
 #ruleBox>button,
@@ -454,8 +454,140 @@ body{
 }
 
 /* 确保排行榜文本使用像素字体 */
-#endBox h1, 
+#endBox h1,
 #scoreRank,
 #endBox td {
     font-family: 'SimplePixels', Arial, sans-serif !important;
+}
+
+/* Add these updated styles to your taiko.css file */
+
+#walletBox {
+    margin-top: 50px;
+    width: 900px;
+    height: 510px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 20px solid white !important;
+    display: block;
+    background-image: url(../../assets/img/startbg.jpg);
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px !important;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+#walletBox .modal-content {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    width: 80%;
+    max-width: 600px;
+    margin: 80px auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+#walletBox h2 {
+    color: #E81899;
+    margin-bottom: 25px;
+    font-family: 'SimplePixels', Arial, sans-serif !important;
+    font-size: 28px;
+    text-align: center;
+}
+
+#walletBox p {
+    color: #333;
+    margin-bottom: 30px;
+    font-family: 'SimplePixels', Arial, sans-serif !important;
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.loader {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #E81899;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#connectWalletBtn, #continueWithoutWalletBtn {
+    width: 300px;
+    height: 55px;
+    line-height: 55px;
+    font-size: 18px;
+    text-align: center;
+    margin: 15px auto;
+    border-radius: 25px;
+    outline: none;
+    border: none;
+    font-family: 'SimplePixels', Arial, sans-serif !important;
+    cursor: pointer;
+    display: block;
+}
+
+#connectWalletBtn {
+    background-color: #E81899;
+    color: white;
+    box-shadow: 0 3px 8px rgba(232, 24, 153, 0.3);
+}
+
+#connectWalletBtn:hover {
+    background-color: #d1157f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(232, 24, 153, 0.4);
+}
+
+#continueWithoutWalletBtn {
+    background-color: transparent;
+    color: #555;
+    border: 2px solid #aaa;
+}
+
+#continueWithoutWalletBtn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+#walletStatus {
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px auto;
+    text-align: left;
+    width: 80%;
+    font-family: 'SimplePixels', Arial, sans-serif !important;
+}
+
+.wallet-address {
+    background-color: rgba(232, 24, 153, 0.1);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 12px;
+    margin-left: 8px;
+    color: #E81899;
+}
+
+#walletError {
+    color: #ff3838;
+    padding: 10px;
+    margin: 15px auto;
+    font-family: 'SimplePixels', Arial, sans-serif !important;
+    font-size: 14px;
+}
+
+.hidden {
+    display: none !important;
 }
