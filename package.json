@@ -1,0 +1,20 @@
+{
+  "name": "taiko-game",
+  "version": "1.0.0",
+  "description": "Taiko rhythm game with web3 integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server . -p 3000 -o -c-1",
+    "dev": "http-server . -p 3000 -o -c-1",
+    "build": "echo \"No build step configured\" && exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "@walletconnect/web3-provider": "^1.8.0",
+    "@walletconnect/qrcode-modal": "^1.8.0"
+  }
+}
