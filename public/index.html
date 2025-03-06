@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Taiko Game</title>
+    <link rel="stylesheet" href="src/css/taiko.css">
+    <!-- Import WalletConnect SDK directly -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/qrcode-modal@1.8.0/dist/umd/index.min.js"></script>
+</head>
+<body>
+<!-- Wallet Connection UI -->
+<div id="walletBox">
+    <div class="modal-content">
+        <h2>Connect to Taiko Alethia</h2>
+        <p>Scan the QR code with your wallet app to connect to Taiko Alethia and play.</p>
+
+        <div id="connectLoader" class="hidden">
+            <div class="loader"></div>
+            <p>Initializing connection...</p>
+        </div>
+
+        <div id="walletStatus" class="hidden">
+            <p>Connected: <span id="walletAddress">Not connected</span></p>
+            <p>Network: <span id="networkName">Taiko Alethia</span></p>
+        </div>
+
+        <div id="walletError" class="error-message hidden"></div>
+
+        <button id="connectWalletBtn">Connect Wallet</button>
+        <button id="continueWithoutWalletBtn">Continue Without Wallet</button>
+    </div>
+</div>
+
+<div id="startBox" class="hidden">
+    <img src="assets/img/title.png" alt="">
+    <div>
+        <input type="text" placeholder="Enter your name" id="username">
+        <h4></h4>
+        <div onclick="gameStart()">Start Game</div>
+    </div>
+</div>
+
+<div id="ruleBox">
+    <img src="assets/img/rules.png" alt="">
+    <button onclick="gamePlay()">我知道啦~</button>
+</div>
+<div id="taikoBox">
+    <div id="head"></div>
+    <div id="middle">
+        <div id="theIcon">
+            <h1 id="scoreBoard">0</h1>
+            <img src="assets/img/hardicon.png" alt="" id="hardIcon">
+            <img src="assets/img/taiko.png" alt="" id="taikoIcon">
+            <img src="assets/img/taikoredleft.png" alt="" class="taikoRed">
+            <img src="assets/img/taikoblueleft.png" alt="" class="taikoBlue">
+            <img src="assets/img/taikoredright.png" alt="" class="taikoRed">
+            <img src="assets/img/taikoblueright.png" alt="" class="taikoBlue">
+        </div>
+        <div id="theRoad">
+            <img src="assets/img/taikoshadow.png" alt="">
+            <img src="assets/img/taikosmile.png" alt="" id="taikoSmile">
+            <canvas id="roadCtx" width="645" height="120"></canvas>
+            <canvas id="judgementCtx" width="650" height="250"></canvas>
+        </div>
+    </div>
+    <div id="foot">
+        <div id="pauseChoice">
+            <button onclick="gamePlay()" id="restartButton">Restart</button>
+            <button onclick="gameContinue()" id="continueButton">Continue</button>
+        </div>
+        <button onclick="gamePause()" id="pausebutton">暂停</button>
+        <canvas id="dancerCtx" width="900" height="260"></canvas>
+    </div>
+</div>
+<div id="endBox">
+    <h1>Leaderboard</h1>
+    <table id="scoreRank">
+        <tr><td><div id="firstIcon"></div></td><td>None</td><td>None</td></tr>
+        <tr><td><div id="secondIcon"></div></td><td>None</td><td>None</td></tr>
+        <tr><td><div id="thirdIcon"></div></td><td>None</td><td>None</td></tr>
+    </table>
+    <div onclick="gamePlay()">Play Again</div>
+</div>
+<div id="theSource">
+    <img src="assets/img/taikocomb.png" alt="" id="taikoComb">
+    <img src="assets/img/judgementText.png" alt="" id="judgementText">
+    <img src="assets/img/judgementHalo.png" alt="" id="judgementHalo">
+    <img src="assets/img/dancer_taiko.png" alt="" id="dancerTaiko">
+    <img src="assets/img/dancer_1.png" alt="" id="dancer_1">
+    <img src="assets/img/dancergirl.png" alt="" id="dancergirl">
+    <audio src="assets/audio/bg_travel.mp3" id="bg_travel"></audio>
+    <audio src="assets/audio/bgmusic.m4a" id="bgmusic" loop="loop"></audio>
+    <audio src="assets/audio/gamestart.m4a" id="gamestart"></audio>
+    <audio src="assets/audio/title_call.m4a" id="title_call"></audio>
+    <audio src="assets/audio/dong.wav" id="dongmusic"></audio>
+    <audio src="assets/audio/ka.wav" id="kamusic"></audio>
+    <audio src="assets/audio/endmusic.m4a" id="endmusic"></audio>
+</div>
+
+<!-- Wallet connection script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize UI
+        document.getElementById('walletBox').style.display = 'block';
+        document.getElementById('startBox').style.display = 'none';
+
+        // Setup wallet connection
+        document.getElementById('connectWalletBtn').addEventListener('click', async function() {
+            try {
+                document.getElementById('connectLoader').classList.remove('hidden');
+                document.getElementById('walletError').classList.add('hidden');
+
+                // Initialize WalletConnect Provider
+                window.provider = new WalletConnectProvider.default({
+                    rpc: {
+                        167000: "https://rpc.ankr.com/taiko"
+                    },
+                    chainId: 167000,
+                    qrcodeModal: WalletConnectQRCodeModal.default
+                });
+
+                // Enable session (triggers QR Code modal)
+                const accounts = await window.provider.enable();
+                window.walletAddress = accounts[0];
+
+                // Subscribe to events
+                window.provider.on("disconnect", (code, reason) => {
+                    console.log("Disconnected:", code, reason);
+                    window.walletAddress = null;
+                });
+
+                document.getElementById('connectLoader').classList.add('hidden');
+
+                if (window.walletAddress) {
+                    // Show wallet address
+                    const shortAddress = `${window.walletAddress.substring(0, 6)}...${window.walletAddress.substring(window.walletAddress.length - 4)}`;
+                    document.getElementById('walletAddress').textContent = shortAddress;
+                    document.getElementById('walletStatus').classList.remove('hidden');
+
+                    // Move to name entry screen after short delay
+                    setTimeout(function() {
+                        document.getElementById('walletBox').style.display = 'none';
+                        document.getElementById('startBox').style.display = 'block';
+                    }, 1500);
+                }
+            } catch (error) {
+                document.getElementById('connectLoader').classList.add('hidden');
+                document.getElementById('walletError').textContent = error.message;
+                document.getElementById('walletError').classList.remove('hidden');
+                console.error("Connection error:", error);
+            }
+        });
+
+        // Continue without wallet
+        document.getElementById('continueWithoutWalletBtn').addEventListener('click', function() {
+            document.getElementById('walletBox').style.display = 'none';
+            document.getElementById('startBox').style.display = 'block';
+        });
+
+        // Override window.onload to also play the background music
+        // This preserves the original functionality while adding our new UI
+        const originalOnload = window.onload;
+        window.onload = function() {
+            if (typeof originalOnload === 'function') {
+                originalOnload();
+            }
+        };
+    });
+</script>
+
+<!-- Game script -->
+<script src="src/js/taiko.js"></script>
+
+</body>
+</html>

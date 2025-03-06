@@ -6,7 +6,7 @@
   "scripts": {
     "start": "http-server . -p 3000 -o -c-1",
     "dev": "http-server . -p 3000 -o -c-1",
-    "build": "echo \"No build step configured\" && exit 0"
+    "build": "mkdir -p public && cp -r index.html assets src public/"
   },
   "author": "",
   "license": "ISC",
