@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <title>Taiko Game</title>
     <link rel="stylesheet" href="src/css/taiko.css">
-    <!-- Import WalletConnect SDK directly -->
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/qrcode-modal@1.8.0/dist/umd/index.min.js"></script>
 </head>
 <body>
 <!-- Wallet Connection UI -->
@@ -45,6 +42,7 @@
     <img src="assets/img/rules.png" alt="">
     <button onclick="gamePlay()">我知道啦~</button>
 </div>
+
 <div id="taikoBox">
     <div id="head"></div>
     <div id="middle">
@@ -73,6 +71,7 @@
         <canvas id="dancerCtx" width="900" height="260"></canvas>
     </div>
 </div>
+
 <div id="endBox">
     <h1>Leaderboard</h1>
     <table id="scoreRank">
@@ -82,6 +81,7 @@
     </table>
     <div onclick="gamePlay()">Play Again</div>
 </div>
+
 <div id="theSource">
     <img src="assets/img/taikocomb.png" alt="" id="taikoComb">
     <img src="assets/img/judgementText.png" alt="" id="judgementText">
@@ -106,10 +106,13 @@
         document.getElementById('startBox').style.display = 'none';
 
         // Setup wallet connection
+        /*
         document.getElementById('connectWalletBtn').addEventListener('click', async function() {
             try {
                 document.getElementById('connectLoader').classList.remove('hidden');
                 document.getElementById('walletError').classList.add('hidden');
+
+                console.log("Connecting to wallet...");
 
                 // Initialize WalletConnect Provider
                 window.provider = new WalletConnectProvider.default({
@@ -151,6 +154,7 @@
                 console.error("Connection error:", error);
             }
         });
+        */
 
         // Continue without wallet
         document.getElementById('continueWithoutWalletBtn').addEventListener('click', function() {
@@ -169,6 +173,9 @@
     });
 </script>
 
+
+<!-- Import WalletConnect V2 dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.6.0/dist/index.umd.min.js"></script>
 <!-- Game script -->
 <script src="src/js/taiko.js"></script>
 

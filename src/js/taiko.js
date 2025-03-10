@@ -402,6 +402,9 @@ function gameEnd() {
     setTimeout(function() {
         logoutWallet();
     }, 5000); // Wait 5 seconds before logging out
+
+    // Display wallet address if connected
+    disconnectWallet();
 }
 
 // New function to handle wallet logout
@@ -478,3 +481,130 @@ function queryScore(){
         });
     });
 }
+
+console.log("Initializing WalletConnect V2...");
+
+var username;
+var walletAddress = null;
+var provider = null;
+var taikoList = [];
+
+// Initialize WalletConnect Provider V2
+async function initializeWalletConnect() {
+    if (window.provider) {
+        console.log("WalletConnect V2 already initialized.");
+        return; // Prevent reloading
+    }
+
+    console.log("Checking WalletConnect V2...");
+    const { EthereumProvider } = window['@walletconnect/ethereum-provider'];
+    console.log("EthereumProvider:", EthereumProvider);
+
+    try {
+        provider = await EthereumProvider.init({
+            projectId: "766f664b2cc9db2e6e2763b3be213685",   // REQUIRED: your WalletConnect project ID&#8203;:contentReference[oaicite:3]{index=3}
+            chains: [1],                   // REQUIRED: array of chain IDs to connect (e.g., Ethereum mainnet = 1)&#8203;:contentReference[oaicite:4]{index=4}
+            showQrModal: true,             // REQUIRED: true to enable built-in QR Code modal (via @walletconnect/modal)&#8203;:contentReference[oaicite:5]{index=5}
+            methods: [],                   // OPTIONAL: list of extra Ethereum RPC methods to support
+            events: [],                    // OPTIONAL: extra events to support
+            rpcMap: {},                    // OPTIONAL: custom RPC URLs for the chains
+            metadata: {                    // OPTIONAL: dApp metadata (name, description, url, icons) for wallet display
+              name: "Taiko",
+              description: "Taiko",
+              url: "https://taiko.xyz/",
+              icons: ["https://taiko.xyz/img/home-new/taiko.webp"]
+            }
+        });
+        console.log("WalletConnect V2 initialized.");
+        provider.disconnect();
+
+        return provider;
+    } catch (error) {
+        console.error("WalletConnect V2 Initialization Failed:", error);
+    }
+}
+
+// Run WalletConnect initialization after DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(initializeWalletConnect, 1000); // Delay to allow script to load
+});
+
+
+// Handle account change
+function handleAccountsChanged(accounts) {
+    if (accounts.length > 0) {
+        walletAddress = accounts[0];
+        updateWalletUI(walletAddress);
+    } else {
+        disconnectWallet();
+    }
+}
+
+// Handle disconnect
+function handleDisconnect() {
+    console.log("Wallet disconnected");
+    disconnectWallet();
+}
+
+// Connect wallet
+async function connectWallet() {
+
+    console.log("Connecting wallet...");
+    try {
+        document.getElementById('connectLoader').classList.remove('hidden');
+        document.getElementById('walletError').classList.add('hidden');
+
+        if (!provider) {
+            provider = await initializeWalletConnect();
+        }
+
+        await provider.enable();
+        walletAddress = provider.accounts[0];
+
+        console.log("Wallet connected:", walletAddress);
+
+        if (walletAddress) {
+            updateWalletUI(walletAddress);
+            setTimeout(() => {
+                document.getElementById('walletBox').style.display = 'none';
+                document.getElementById('startBox').style.display = 'block';
+                document.getElementById('startBox').classList.remove("hidden");
+            }, 1500);
+        }
+    } catch (error) {
+        document.getElementById('connectLoader').classList.add('hidden');
+        document.getElementById('walletError').textContent = error.message;
+        document.getElementById('walletError').classList.remove('hidden');
+        console.error("Connection error:", error);
+    }
+}
+
+// Disconnect wallet
+function disconnectWallet() {
+    console.log("Disconnecting wallet...");
+    if (provider) {
+        // Disconnect the wallet
+        provider.disconnect();
+    }
+    walletAddress = null;
+    document.getElementById('walletAddress').textContent = "Not connected";
+    document.getElementById('walletStatus').classList.add('hidden');
+}
+
+// Update Wallet UI
+function updateWalletUI(address) {
+    console.log("updateWalletUI:", address);
+    const shortAddress = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    document.getElementById('walletAddress').textContent = shortAddress;
+    document.getElementById('walletStatus').classList.remove('hidden');
+}
+
+// Attach event listeners when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+    document.getElementById('continueWithoutWalletBtn').addEventListener('click', function () {
+        document.getElementById('walletBox').style.display = 'none';
+        document.getElementById('startBox').style.display = 'block';
+        document.getElementById('startBox').classList.remove("hidden");
+    });
+});

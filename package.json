@@ -14,7 +14,6 @@
     "http-server": "^14.1.1"
   },
   "dependencies": {
-    "@walletconnect/web3-provider": "^1.8.0",
-    "@walletconnect/qrcode-modal": "^1.8.0"
+    "@walletconnect/sign-client": "^2.10.4-184f2234"
   }
 }
